@@ -1,9 +1,18 @@
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import "antd/dist/reset.css";
-import "@designable/react/dist/designable.react.umd.production.css";
+import "antd/dist/antd.css";
+import "@designable/react/esm/theme.less";
 import "./index.css";
 
-// 暂时移除 StrictMode 以抑制来自 @designable/react 的 defaultProps 警告
-// 这是第三方库的问题，不影响功能。等库更新后可恢复 StrictMode
+if (import.meta.env.DEV) {
+  const originalWarn = console.warn;
+  console.warn = (...args: any[]) => {
+    const first = args[0];
+    if (typeof first === "string" && first.includes("Support for defaultProps will be removed from function components")) {
+      return;
+    }
+    originalWarn(...(args as []));
+  };
+}
+
 ReactDOM.createRoot(document.getElementById("root")!).render(<App />);
