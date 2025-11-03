@@ -1,103 +1,70 @@
-import { useState } from "react";
 import {
-  Form,
-  FormItem,
-  Input,
-  FormButtonGroup,
-  Submit,
-  Reset,
-} from "@formily/antd";
-import { createForm } from "@formily/core";
-import { FormProvider, createSchemaField } from "@formily/react";
-import { Designer } from "@designable/react";
-import { Engine } from "@designable/core";
+  BrowserRouter,
+  Routes,
+  Route,
+  Link,
+  useLocation,
+} from "react-router-dom";
+import { Layout, Menu } from "antd";
+import { FormOutlined, ToolOutlined } from "@ant-design/icons";
+import DesignablePage from "./pages/DesignablePage";
+import FormilyPage from "./pages/FormilyPage";
 
-const SchemaField = createSchemaField({
-  components: {
-    FormItem,
-    Input,
-  },
-});
+const { Header, Content } = Layout;
 
-function App() {
-  const [engine] = useState(() => {
-    return new Engine({
-      shortcuts: [],
-      effects: [],
-    });
-  });
-
-  const form = createForm({
-    initialValues: {
-      name: "",
-      email: "",
-    },
-  });
-
-  const onSubmit = (values: any) => {
-    console.log("表单提交:", values);
-    alert(`提交成功！\n姓名: ${values.name}\n邮箱: ${values.email}`);
-  };
+function Navigation() {
+  const location = useLocation();
 
   return (
-    <div
+    <Header
       style={{
-        minHeight: "100vh",
-        padding: "40px",
-        backgroundColor: "#f5f5f5",
+        backgroundColor: "#fff",
+        padding: "0 24px",
+        borderBottom: "1px solid #e8e8e8",
       }}
     >
-      {/* @ts-expect-error - Designer component accepts children but types are incomplete */}
-      <Designer engine={engine}>
+      <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
         <div
-          style={{
-            backgroundColor: "white",
-            padding: "30px",
-            borderRadius: "8px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-            maxWidth: "600px",
-            margin: "0 auto",
-          }}
+          style={{ fontSize: "18px", fontWeight: "bold", marginRight: "32px" }}
         >
-          <h1
-            style={{ marginBottom: "24px", textAlign: "center", color: "#333" }}
-          >
-            Formily + Designable 表单示例
-          </h1>
-          <FormProvider form={form}>
-            <Form form={form} layout="vertical" onAutoSubmit={onSubmit}>
-              <SchemaField>
-                <SchemaField.String
-                  name="name"
-                  title="姓名"
-                  x-decorator="FormItem"
-                  x-component="Input"
-                  x-component-props={{
-                    placeholder: "请输入姓名",
-                  }}
-                  required
-                />
-                <SchemaField.String
-                  name="email"
-                  title="邮箱"
-                  x-decorator="FormItem"
-                  x-component="Input"
-                  x-component-props={{
-                    type: "email",
-                    placeholder: "请输入邮箱",
-                  }}
-                  required
-                />
-              </SchemaField>
-              <FormButtonGroup>
-                <Submit>提交</Submit>
-                <Reset>重置</Reset>
-              </FormButtonGroup>
-            </Form>
-          </FormProvider>
+          低代码表单平台
         </div>
-      </Designer>
-    </div>
+        <Menu
+          mode="horizontal"
+          selectedKeys={[location.pathname]}
+          style={{ border: "none", flex: 1 }}
+          items={[
+            {
+              key: "/designer",
+              icon: <ToolOutlined />,
+              label: <Link to="/designer">表单设计器</Link>,
+            },
+            {
+              key: "/form",
+              icon: <FormOutlined />,
+              label: <Link to="/form">表单渲染</Link>,
+            },
+          ]}
+        />
+      </div>
+    </Header>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Layout style={{ minHeight: "100vh" }}>
+        <Navigation />
+        <Content>
+          <Routes>
+            <Route path="/" element={<DesignablePage />} />
+            <Route path="/designer" element={<DesignablePage />} />
+            <Route path="/form" element={<FormilyPage />} />
+          </Routes>
+        </Content>
+      </Layout>
+    </BrowserRouter>
   );
 }
 
